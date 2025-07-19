@@ -16,16 +16,13 @@ const apiValidator = new ApiValidator();
 program
   .name('spectator-mcp')
   .description('MCP Client for Spectator Context Tool')
-  .version(packageJson.version);
-
-// Setup command
-program
-  .command('setup')
-  .description('Set up Spectator MCP for your AI platforms')
-  .option('-k, --api-key <key>', 'Your Spectator API key')
+  .version(packageJson.version)
+  .option('-k, --api-key <key>', 'Your Spectator API key (runs setup)')
   .option('-p, --platforms <platforms>', 'Comma-separated list of platforms to configure (default: all detected)')
-  .option('-s, --scope <scope>', 'Configuration scope for platforms that support it (global/project)', 'global')
-  .action(async (options) => {
+  .option('-s, --scope <scope>', 'Configuration scope for platforms that support it (global/project)', 'global');
+
+// Setup function
+async function runSetup(options) {
     try {
       logger.header('Spectator MCP Setup');
 
@@ -123,7 +120,16 @@ program
       logger.error(`Setup failed: ${error.message}`);
       process.exit(1);
     }
-  });
+}
+
+// Setup command
+program
+  .command('setup')
+  .description('Set up Spectator MCP for your AI platforms')
+  .option('-k, --api-key <key>', 'Your Spectator API key')
+  .option('-p, --platforms <platforms>', 'Comma-separated list of platforms to configure (default: all detected)')
+  .option('-s, --scope <scope>', 'Configuration scope for platforms that support it (global/project)', 'global')
+  .action(runSetup);
 
 // Validate command
 program
@@ -280,7 +286,21 @@ program
 // Parse command line arguments
 program.parse(process.argv);
 
-// Show help if no command provided
-if (!process.argv.slice(2).length) {
-  program.outputHelp();
+// Run setup by default if no command provided or if global options are used
+const args = process.argv.slice(2);
+const globalOptions = program.opts();
+
+// Check if first argument is an API key (not a command or flag)
+let inferredApiKey = null;
+if (args.length === 1 && !args[0].startsWith('-') && !['setup', 'validate', 'config', 'remove', 'help'].includes(args[0])) {
+  inferredApiKey = args[0];
+}
+
+if (!args.length || globalOptions.apiKey || globalOptions.platforms || inferredApiKey) {
+  // Run setup with global options, inferred API key, or interactive setup
+  runSetup({
+    apiKey: globalOptions.apiKey || inferredApiKey,
+    platforms: globalOptions.platforms,
+    scope: globalOptions.scope || 'global'
+  });
 }

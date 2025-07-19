@@ -6,10 +6,22 @@ Universal MCP (Model Context Protocol) client for connecting AI coding assistant
 
 ### Automatic Setup (Recommended)
 
-Run this command in your terminal:
+Run this simple command in your terminal:
 
 ```bash
-npx spectator-mcp setup --api-key YOUR_API_KEY
+npx spectator-mcp YOUR_API_KEY
+```
+
+Or with the flag:
+
+```bash
+npx spectator-mcp --api-key YOUR_API_KEY
+```
+
+Or for interactive setup:
+
+```bash
+npx spectator-mcp
 ```
 
 This will automatically detect and configure all supported AI platforms installed on your system.
@@ -35,25 +47,28 @@ For Claude Pro/Max/Team/Enterprise users:
 
 ## Installation & Usage
 
-### Setup Command
+### Setup Options
 
 Configure Spectator MCP for all detected platforms:
 
 ```bash
-npx spectator-mcp setup
-```
+# Interactive setup
+npx spectator-mcp
 
-With options:
+# Simplest - just pass your API key
+npx spectator-mcp YOUR_API_KEY
 
-```bash
-# Non-interactive with API key
-npx spectator-mcp setup --api-key YOUR_KEY
+# Or with flag
+npx spectator-mcp --api-key YOUR_KEY
 
-# Configure specific platforms only
-npx spectator-mcp setup --api-key YOUR_KEY --platforms claude,cursor
+# Configure specific platforms only  
+npx spectator-mcp --api-key YOUR_KEY --platforms claude,cursor
 
 # Use project-specific config (for Cursor/VS Code)
-npx spectator-mcp setup --api-key YOUR_KEY --scope project
+npx spectator-mcp --api-key YOUR_KEY --scope project
+
+# You can also use the explicit setup command
+npx spectator-mcp setup --api-key YOUR_KEY
 ```
 
 ### Validate Configuration

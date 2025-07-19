@@ -9,7 +9,7 @@ MCP Client for Spectator Context Tool. Give all of your LLMs your life context t
 Run this simple command to set up Spectator MCP for all your AI coding assistants:
 
 ```bash
-npx spectator-mcp setup --api-key YOUR_API_KEY
+npx spectator-mcp YOUR_API_KEY
 ```
 
 This will automatically configure Claude Desktop, Cursor, Windsurf, VS Code, and Cline if they're installed.
