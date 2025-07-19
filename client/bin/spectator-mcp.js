@@ -283,23 +283,32 @@ program
     }
   });
 
+// Check for API key before parsing to avoid "unknown command" error
+const args = process.argv.slice(2);
+let inferredApiKey = null;
+
+// If there's exactly one argument that doesn't start with '-' and isn't a known command, treat it as an API key
+if (args.length === 1 && !args[0].startsWith('-') && !['setup', 'validate', 'config', 'remove', 'help'].includes(args[0])) {
+  inferredApiKey = args[0];
+  // Run setup directly with the inferred API key
+  runSetup({
+    apiKey: inferredApiKey,
+    platforms: undefined,
+    scope: 'global'
+  });
+  process.exit(0);
+}
+
 // Parse command line arguments
 program.parse(process.argv);
 
 // Run setup by default if no command provided or if global options are used
-const args = process.argv.slice(2);
 const globalOptions = program.opts();
 
-// Check if first argument is an API key (not a command or flag)
-let inferredApiKey = null;
-if (args.length === 1 && !args[0].startsWith('-') && !['setup', 'validate', 'config', 'remove', 'help'].includes(args[0])) {
-  inferredApiKey = args[0];
-}
-
-if (!args.length || globalOptions.apiKey || globalOptions.platforms || inferredApiKey) {
-  // Run setup with global options, inferred API key, or interactive setup
+if (!args.length || globalOptions.apiKey || globalOptions.platforms) {
+  // Run setup with global options or interactive setup
   runSetup({
-    apiKey: globalOptions.apiKey || inferredApiKey,
+    apiKey: globalOptions.apiKey,
     platforms: globalOptions.platforms,
     scope: globalOptions.scope || 'global'
   });
