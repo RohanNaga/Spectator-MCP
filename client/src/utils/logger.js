@@ -61,6 +61,14 @@ class Logger {
     console.log('\n' + chalk.bold(message));
   }
 
+  step(message) {
+    console.log(chalk.blue('→'), message);
+  }
+
+  result(icon, message) {
+    console.log(icon, message);
+  }
+
   code(message) {
     console.log(chalk.gray(message));
   }

@@ -50,15 +50,15 @@ async function runSetup(options) {
       logger.succeedSpinner('API key validated successfully');
 
       // Detect installed platforms
-      logger.info('Detecting installed platforms...');
+      logger.step('Detecting installed AI platforms...');
       const installedPlatforms = detector.getInstalledPlatforms();
       
       if (installedPlatforms.length === 0) {
-        logger.error('No supported platforms detected. Please install Claude, Cursor, Windsurf, VS Code, or Cline first.');
+        logger.error('No supported platforms detected. Please install Claude Desktop, Cursor, Windsurf, VS Code, or Cline first.');
         process.exit(1);
       }
 
-      logger.success(`Found ${installedPlatforms.length} platform(s): ${installedPlatforms.map(p => detector.getPlatformDisplayName(p)).join(', ')}`);
+      console.log(`   Found: ${installedPlatforms.map(p => detector.getPlatformDisplayName(p)).join(', ')}`);
 
       // Determine which platforms to configure
       let platformsToConfig = installedPlatforms;
@@ -73,7 +73,7 @@ async function runSetup(options) {
       }
 
       // Configure each platform
-      logger.section('Configuring platforms...');
+      logger.step('Configuring platforms...');
       const results = [];
       
       for (const platformName of platformsToConfig) {
@@ -84,36 +84,83 @@ async function runSetup(options) {
         }
 
         const platform = new PlatformClass(detector);
+        const displayName = detector.getPlatformDisplayName(platformName);
         
         try {
-          await platform.configure(apiKey, { scope: options.scope });
-          results.push({ platform: platformName, success: true });
+          process.stdout.write(`   Setting up ${displayName}... `);
+          const result = await platform.configure(apiKey, { scope: options.scope });
+          
+          if (result && result.updated) {
+            console.log(chalk.yellow('↻ (updated)'));
+          } else {
+            console.log(chalk.green('✓'));
+          }
+          
+          results.push({ 
+            platform: platformName, 
+            success: true, 
+            updated: result?.updated || false,
+            hasOtherServers: result?.hasOtherServers || false
+          });
         } catch (error) {
-          logger.error(`Failed to configure ${detector.getPlatformDisplayName(platformName)}: ${error.message}`);
+          console.log(chalk.red('✗'));
+          logger.error(`   Error: ${error.message}`);
           results.push({ platform: platformName, success: false, error: error.message });
         }
       }
 
-      // Summary
-      logger.section('Setup Summary:');
+      // Show results
+      console.log('');
       const successful = results.filter(r => r.success);
       const failed = results.filter(r => !r.success);
       
       if (successful.length > 0) {
-        logger.success(`Successfully configured: ${successful.map(r => detector.getPlatformDisplayName(r.platform)).join(', ')}`);
+        // Big success message
+        console.log(chalk.green.bold('✅ MCP Spectator Successfully Installed!'));
+        console.log('');
+        
+        logger.section('📦 Configured Platforms:');
+        successful.forEach(r => {
+          const configPath = detector.getConfigPath(r.platform, options.scope);
+          const status = r.updated ? chalk.yellow('↻ Updated') : chalk.green('✓ Added');
+          logger.result(`  ${status}`, `${detector.getPlatformDisplayName(r.platform)}`);
+          if (configPath) {
+            logger.code(`    Config: ${configPath}`);
+          }
+          if (r.hasOtherServers) {
+            logger.code(`    Note: Preserved existing MCP servers`);
+          }
+        });
       }
       
       if (failed.length > 0) {
-        logger.error(`Failed to configure: ${failed.map(r => detector.getPlatformDisplayName(r.platform)).join(', ')}`);
+        console.log('');
+        logger.section('❌ Failed to Configure:');
+        failed.forEach(r => {
+          logger.result('  ✗', `${detector.getPlatformDisplayName(r.platform)}: ${r.error}`);
+        });
       }
 
       // Show next steps
       if (successful.length > 0) {
-        logger.section('Next Steps:');
-        logger.info('1. Restart the configured applications');
-        logger.info('2. In Claude (Pro/Team/Enterprise), you can also use the custom connector:');
-        logger.info(`   - Name: Spectator Voice Memory`);
-        logger.info(`   - URL: ${apiValidator.formatApiUrl(apiKey)}`);
+        console.log('');
+        logger.section('🚀 Next Steps:');
+        logger.step('Restart the configured applications to activate MCP');
+        
+        if (successful.some(r => r.platform === 'claude')) {
+          logger.step('For Claude Pro/Team/Enterprise, you can also use the custom connector:');
+          logger.code(`   Name: Spectator Voice Memory`);
+          logger.code(`   URL: ${apiValidator.formatApiUrl(apiKey)}`);
+        }
+        
+        logger.section('🔍 To verify setup:');
+        logger.code('   npx spectator-mcp validate');
+        
+        console.log('');
+        console.log(chalk.green('🎉 You\'re all set! Your AI assistants now have access to your Spectator context.'));
+      } else {
+        logger.error('No platforms were successfully configured. Please check the errors above.');
+        process.exit(1);
       }
 
     } catch (error) {
