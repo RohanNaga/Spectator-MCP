@@ -107,7 +107,7 @@ ${chalk.bold('Alternative: Custom Connector (Pro/Team/Enterprise only):')}
 2. Click "Add custom connector"
 3. Enter:
    - Name: ${chalk.cyan('Spectator Voice Memory')}
-   - URL: ${chalk.cyan(`https://api.spectatorcontext.com/mcp-server/mcp/${apiKey}`)}
+   - URL: ${chalk.cyan(`https://spectatorcontext.com/mcp-server/mcp/${apiKey}`)}
 `;
   }
 }

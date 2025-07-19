@@ -17,9 +17,6 @@ class CursorPlatform extends BasePlatform {
       throw new Error('Could not determine Cursor configuration path');
     }
 
-    // Backup existing config
-    const backupPath = await this.backupConfig(configPath);
-
     // Read existing config or create new
     let config = await this.readConfig(configPath) || {};
     
@@ -28,14 +25,22 @@ class CursorPlatform extends BasePlatform {
       config.mcpServers = {};
     }
 
-    // Add Spectator MCP server
+    // Check if Spectator is already configured
+    const isAlreadyConfigured = config.mcpServers['spectator-voice-memory'];
+    
+    // Backup existing config if it exists
+    if (isAlreadyConfigured) {
+      const backupPath = await this.backupConfig(configPath);
+    }
+
+    // Add/Update Spectator MCP server
     const mcpConfig = this.getMcpServerConfig(apiKey);
     Object.assign(config.mcpServers, mcpConfig);
 
     // Write config
     await this.writeConfig(configPath, config);
 
-    return true;
+    return { updated: isAlreadyConfigured, hasOtherServers: Object.keys(config.mcpServers).length > 1 };
   }
 
   async validate() {

@@ -15,13 +15,7 @@ class ClinePlatform extends BasePlatform {
       throw new Error('Could not determine Cline configuration path. Make sure VS Code and Cline extension are installed.');
     }
 
-    console.log(chalk.blue(`Configuring ${this.displayName}...`));
 
-    // Backup existing config
-    const backupPath = await this.backupConfig(configPath);
-    if (backupPath) {
-      console.log(chalk.gray(`  Backed up existing config to: ${backupPath}`));
-    }
 
     // Read existing config or create new
     let config = await this.readConfig(configPath) || {};
@@ -31,15 +25,22 @@ class ClinePlatform extends BasePlatform {
       config.mcpServers = {};
     }
 
+    // Check if Spectator is already configured
+    const isAlreadyConfigured = config.mcpServers['spectator-voice-memory'];
+    
+    // Backup existing config if it exists
+    if (isAlreadyConfigured) {
+      const backupPath = await this.backupConfig(configPath);
+    }
+
     // Add Spectator MCP server
     const mcpConfig = this.getMcpServerConfig(apiKey);
     Object.assign(config.mcpServers, mcpConfig);
 
     // Write config
     await this.writeConfig(configPath, config);
-    console.log(chalk.green(`✓ ${this.displayName} configured successfully`));
 
-    return true;
+    return { updated: isAlreadyConfigured, hasOtherServers: Object.keys(config.mcpServers).length > 1 };
   }
 
   async validate() {

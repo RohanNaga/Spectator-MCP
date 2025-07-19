@@ -13,15 +13,29 @@ const program = new Command();
 const detector = new PlatformDetector();
 const apiValidator = new ApiValidator();
 
+// Constants
+const MIN_API_KEY_LENGTH = 10;
+const KNOWN_COMMANDS = ['setup', 'validate', 'config', 'remove', 'help'];
+
 program
   .name('spectator-mcp')
   .description('MCP Client for Spectator Context Tool')
   .version(packageJson.version)
   .option('-k, --api-key <key>', 'Your Spectator API key (runs setup)')
   .option('-p, --platforms <platforms>', 'Comma-separated list of platforms to configure (default: all detected)')
-  .option('-s, --scope <scope>', 'Configuration scope for platforms that support it (global/project)', 'global');
+  .option('-s, --scope <scope>', 'Configuration scope for platforms that support it (global/project)', 'global')
+  .action(async (options) => {
+    // Default action when no command is specified
+    await runSetup(options);
+  });
 
-// Setup function
+/**
+ * Run the setup process to configure MCP for detected AI platforms
+ * @param {Object} options - Setup options
+ * @param {string} [options.apiKey] - Spectator API key
+ * @param {string} [options.platforms] - Comma-separated list of platforms to configure
+ * @param {string} [options.scope='global'] - Configuration scope (global/project)
+ */
 async function runSetup(options) {
     try {
       logger.header('Spectator MCP Setup');
@@ -40,7 +54,12 @@ async function runSetup(options) {
         apiKey = answers.apiKey;
       }
 
-      // Skip validation for now - the MCP connection will validate the key
+      // Basic API key validation
+      if (!apiKey || apiKey.trim().length < MIN_API_KEY_LENGTH) {
+        logger.error(`Invalid API key format. API keys should be at least ${MIN_API_KEY_LENGTH} characters.`);
+        process.exit(1);
+      }
+      
       logger.step('Using API key for MCP configuration...');
 
       // Detect installed platforms
@@ -98,6 +117,7 @@ async function runSetup(options) {
           });
         } catch (error) {
           console.log(chalk.red('✗'));
+          console.error('Full error:', error);
           logger.error(`   Error: ${error.message}`);
           results.push({ platform: platformName, success: false, error: error.message });
         }
@@ -324,33 +344,20 @@ program
     }
   });
 
-// Check for API key before parsing to avoid "unknown command" error
+// Check for API key as first argument before parsing
 const args = process.argv.slice(2);
-let inferredApiKey = null;
-
-// If there's exactly one argument that doesn't start with '-' and isn't a known command, treat it as an API key
-if (args.length === 1 && !args[0].startsWith('-') && !['setup', 'validate', 'config', 'remove', 'help'].includes(args[0])) {
-  inferredApiKey = args[0];
+if (args.length === 1 && !args[0].startsWith('-') && !KNOWN_COMMANDS.includes(args[0])) {
   // Run setup directly with the inferred API key
   runSetup({
-    apiKey: inferredApiKey,
+    apiKey: args[0],
     platforms: undefined,
     scope: 'global'
+  }).then(() => process.exit(0)).catch(error => {
+    logger.error(`Setup failed: ${error.message}`);
+    process.exit(1);
   });
-  process.exit(0);
+} else {
+  // Parse command line arguments normally
+  program.parse(process.argv);
 }
 
-// Parse command line arguments
-program.parse(process.argv);
-
-// Run setup by default if no command provided or if global options are used
-const globalOptions = program.opts();
-
-if (!args.length || globalOptions.apiKey || globalOptions.platforms) {
-  // Run setup with global options or interactive setup
-  runSetup({
-    apiKey: globalOptions.apiKey,
-    platforms: globalOptions.platforms,
-    scope: globalOptions.scope || 'global'
-  });
-}

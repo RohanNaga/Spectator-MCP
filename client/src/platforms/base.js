@@ -39,12 +39,16 @@ class BasePlatform {
 
   // Write configuration
   async writeConfig(configPath, config) {
-    const dir = path.dirname(configPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    try {
+      const dir = path.dirname(configPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
 
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    } catch (error) {
+      throw new Error(`Failed to write config to ${configPath}: ${error.message}`);
+    }
   }
 
   // Backup existing configuration
