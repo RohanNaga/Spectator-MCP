@@ -16,13 +16,15 @@ This will automatically configure Claude Desktop, Cursor, Windsurf, VS Code, and
 
 ### Option 2: Claude Custom Connector
 
-For Claude Pro/Team/Enterprise users, simply add a custom connector:
+For Claude Website users, simply add a custom connector:
 
 1. Go to Settings → Connectors
 2. Click "Add custom connector"
 3. Enter:
    - **Name:** Spectator Voice Memory  
    - **URL:** `https://spectatorcontext.com/mcp-server/mcp/YOUR_API_KEY`
+
+Replace YOUR_API_KEY in the url with the API key you received from spectatorcontext.com
 
 ### Option 3: Manual Configuration
 

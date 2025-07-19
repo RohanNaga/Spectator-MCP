@@ -12,12 +12,6 @@ Run this simple command in your terminal:
 npx spectator-mcp YOUR_API_KEY
 ```
 
-Or with the flag:
-
-```bash
-npx spectator-mcp --api-key YOUR_API_KEY
-```
-
 Or for interactive setup:
 
 ```bash
