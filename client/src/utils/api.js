@@ -3,7 +3,7 @@ const chalk = require('chalk');
 
 class ApiValidator {
   constructor() {
-    this.baseUrl = 'https://api.spectatorcontext.com';
+    this.baseUrl = 'https://spectatorcontext.com';
   }
 
   async validateApiKey(apiKey) {

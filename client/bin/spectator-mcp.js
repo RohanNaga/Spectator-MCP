@@ -42,12 +42,18 @@ async function runSetup(options) {
 
       // Validate API key
       logger.startSpinner('Validating API key...');
-      const validation = await apiValidator.validateApiKey(apiKey);
-      if (!validation.valid) {
-        logger.failSpinner(`Invalid API key: ${validation.error}`);
-        process.exit(1);
+      try {
+        const validation = await apiValidator.validateApiKey(apiKey);
+        if (!validation.valid) {
+          logger.failSpinner(`API key validation failed: ${validation.error}`);
+          logger.info('Please check your API key and try again.');
+          process.exit(1);
+        }
+        logger.succeedSpinner('API key validated successfully');
+      } catch (error) {
+        logger.failSpinner(`Failed to validate API key: ${error.message}`);
+        logger.info('Continuing with setup (validation may have failed due to network issues)...');
       }
-      logger.succeedSpinner('API key validated successfully');
 
       // Detect installed platforms
       logger.step('Detecting installed AI platforms...');

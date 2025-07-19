@@ -17,7 +17,7 @@ class BasePlatform {
         "args": [
           "-y",
           "mcp-remote",
-          `https://api.spectatorcontext.com/mcp-server/mcp/${apiKey}`
+          `https://spectatorcontext.com/mcp-server/mcp/${apiKey}`
         ]
       }
     };

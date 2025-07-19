@@ -34,7 +34,7 @@ For Claude Pro/Max/Team/Enterprise users:
 2. Click "Add custom connector"
 3. Enter:
    - **Name:** Spectator Voice Memory
-   - **URL:** `https://api.spectatorcontext.com/mcp-server/mcp/YOUR_API_KEY`
+   - **URL:** `https://spectatorcontext.com/mcp-server/mcp/YOUR_API_KEY`
 4. Click Save
 
 ## Supported Platforms

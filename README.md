@@ -22,7 +22,7 @@ For Claude Pro/Team/Enterprise users, simply add a custom connector:
 2. Click "Add custom connector"
 3. Enter:
    - **Name:** Spectator Voice Memory  
-   - **URL:** `https://api.spectatorcontext.com/mcp-server/mcp/YOUR_API_KEY`
+   - **URL:** `https://spectatorcontext.com/mcp-server/mcp/YOUR_API_KEY`
 
 ### Option 3: Manual Configuration
 
@@ -36,7 +36,7 @@ Add this to your platform's MCP configuration file:
       "args": [
         "-y",
         "mcp-remote",
-        "https://api.spectatorcontext.com/mcp-server/mcp/YOUR_API_KEY"
+        "https://spectatorcontext.com/mcp-server/mcp/YOUR_API_KEY"
       ]
     }
   }
