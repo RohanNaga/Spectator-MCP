@@ -40,20 +40,8 @@ async function runSetup(options) {
         apiKey = answers.apiKey;
       }
 
-      // Validate API key
-      logger.startSpinner('Validating API key...');
-      try {
-        const validation = await apiValidator.validateApiKey(apiKey);
-        if (!validation.valid) {
-          logger.failSpinner(`API key validation failed: ${validation.error}`);
-          logger.info('Please check your API key and try again.');
-          process.exit(1);
-        }
-        logger.succeedSpinner('API key validated successfully');
-      } catch (error) {
-        logger.failSpinner(`Failed to validate API key: ${error.message}`);
-        logger.info('Continuing with setup (validation may have failed due to network issues)...');
-      }
+      // Skip validation for now - the MCP connection will validate the key
+      logger.step('Using API key for MCP configuration...');
 
       // Detect installed platforms
       logger.step('Detecting installed AI platforms...');
