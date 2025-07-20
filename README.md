@@ -12,7 +12,7 @@ Run this simple command to set up Spectator MCP for all your AI coding assistant
 npx spectator-mcp YOUR_API_KEY
 ```
 
-This will automatically configure Claude Desktop, Cursor, Windsurf, VS Code, and Cline if they're installed.
+This will automatically configure Claude Desktop, Claude Code, Cursor, Windsurf, VS Code, and Cline if they're installed.
 
 ### Option 2: Claude Custom Connector
 
@@ -48,6 +48,7 @@ Add this to your platform's MCP configuration file:
 ## Supported Platforms
 
 - **Claude Desktop** - Anthropic's AI assistant
+- **Claude Code** - Anthropic's CLI for Claude
 - **Cursor** - AI-powered code editor
 - **Windsurf** - The Agentic IDE
 - **VS Code** - With GitHub Copilot

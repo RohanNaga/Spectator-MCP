@@ -67,7 +67,7 @@ async function runSetup(options) {
       const installedPlatforms = detector.getInstalledPlatforms();
       
       if (installedPlatforms.length === 0) {
-        logger.error('No supported platforms detected. Please install Claude Desktop, Cursor, Windsurf, VS Code, or Cline first.');
+        logger.error('No supported platforms detected. Please install Claude Desktop, Claude Code, Cursor, Windsurf, VS Code, or Cline first.');
         process.exit(1);
       }
 

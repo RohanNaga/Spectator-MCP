@@ -16,6 +16,11 @@ class PlatformDetector {
         win32: path.join(process.env.APPDATA || '', 'Claude', 'claude_desktop_config.json'),
         linux: path.join(this.homeDir, '.config', 'Claude', 'claude_desktop_config.json')
       },
+      claudecode: {
+        darwin: path.join(this.homeDir, '.claudecode', 'settings.json'),
+        win32: path.join(this.homeDir, '.claudecode', 'settings.json'),
+        linux: path.join(this.homeDir, '.claudecode', 'settings.json')
+      },
       cursor: {
         global: path.join(this.homeDir, '.cursor', 'mcp.json'),
         project: path.join(process.cwd(), '.cursor', 'mcp.json')
@@ -35,7 +40,7 @@ class PlatformDetector {
       }
     };
 
-    if (platform === 'claude' || platform === 'cline') {
+    if (platform === 'claude' || platform === 'cline' || platform === 'claudecode') {
       return paths[platform][this.platform] || null;
     }
 
@@ -53,6 +58,23 @@ class PlatformDetector {
           linux: '/usr/bin/claude'
         };
         return fs.existsSync(appPaths[this.platform] || '') || (configPath && fs.existsSync(path.dirname(configPath)));
+      },
+      claudecode: () => {
+        // Check if claude-code CLI is installed globally
+        const { execSync } = require('child_process');
+        try {
+          execSync('which claude-code', { stdio: 'ignore' });
+          return true;
+        } catch {
+          try {
+            execSync('where claude-code', { stdio: 'ignore' });
+            return true;
+          } catch {
+            // Also check if settings directory exists
+            const configDir = path.join(this.homeDir, '.claudecode');
+            return fs.existsSync(configDir);
+          }
+        }
       },
       cursor: () => {
         const configDir = path.join(this.homeDir, '.cursor');
@@ -87,7 +109,7 @@ class PlatformDetector {
 
   // Get all installed platforms
   getInstalledPlatforms() {
-    const platforms = ['claude', 'cursor', 'windsurf', 'vscode', 'cline'];
+    const platforms = ['claude', 'claudecode', 'cursor', 'windsurf', 'vscode', 'cline'];
     return platforms.filter(platform => this.isPlatformInstalled(platform));
   }
 
@@ -110,6 +132,7 @@ class PlatformDetector {
   getPlatformDisplayName(platform) {
     const names = {
       claude: 'Claude Desktop',
+      claudecode: 'Claude Code',
       cursor: 'Cursor',
       windsurf: 'Windsurf',
       vscode: 'VS Code',

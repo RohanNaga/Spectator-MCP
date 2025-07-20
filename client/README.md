@@ -34,6 +34,7 @@ For Claude Pro/Max/Team/Enterprise users:
 ## Supported Platforms
 
 - **Claude Desktop** - Anthropic's AI assistant
+- **Claude Code** - Anthropic's CLI for Claude
 - **Cursor** - AI-powered code editor
 - **Windsurf** - The Agentic IDE
 - **VS Code** - With GitHub Copilot
@@ -103,6 +104,15 @@ npx spectator-mcp remove
   - Linux: `~/.config/Claude/claude_desktop_config.json`
 - Requires restart after configuration
 - Pro/Team/Enterprise users can use the custom connector method instead
+
+### Claude Code
+
+- Installation:
+  - Install globally: `npm install -g claude-code`
+  - Or download from: https://github.com/anthropics/claude-code
+- Configuration file: `~/.claudecode/settings.json`
+- Supports MCP out of the box
+- Run `claude-code --settings` to open settings
 
 ### Cursor
 
