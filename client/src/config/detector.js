@@ -60,14 +60,14 @@ class PlatformDetector {
         return fs.existsSync(appPaths[this.platform] || '') || (configPath && fs.existsSync(path.dirname(configPath)));
       },
       claudecode: () => {
-        // Check if claude-code CLI is installed globally
+        // Check if claude CLI is installed globally
         const { execSync } = require('child_process');
         try {
-          execSync('which claude-code', { stdio: 'ignore' });
+          execSync('which claude', { stdio: 'ignore' });
           return true;
         } catch {
           try {
-            execSync('where claude-code', { stdio: 'ignore' });
+            execSync('where claude', { stdio: 'ignore' });
             return true;
           } catch {
             // Also check if settings directory exists
