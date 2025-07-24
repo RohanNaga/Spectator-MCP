@@ -8,6 +8,10 @@ const platforms = require('../src/platforms');
 const ApiValidator = require('../src/utils/api');
 const logger = require('../src/utils/logger');
 const packageJson = require('../package.json');
+const { ensureVersions } = require('../src/utils/version-check');
+
+// Check Node.js and npx versions before proceeding
+ensureVersions();
 
 const program = new Command();
 const detector = new PlatformDetector();
@@ -24,8 +28,12 @@ program
   .option('-k, --api-key <key>', 'Your Spectator API key (runs setup)')
   .option('-p, --platforms <platforms>', 'Comma-separated list of platforms to configure (default: all detected)')
   .option('-s, --scope <scope>', 'Configuration scope for platforms that support it (global/project)', 'global')
-  .action(async (options) => {
+  .action(async (options, command) => {
     // Default action when no command is specified
+    // Check if there's an extra argument that could be an API key
+    if (command.args.length > 0 && !options.apiKey) {
+      options.apiKey = command.args[0];
+    }
     await runSetup(options);
   });
 
@@ -172,6 +180,11 @@ async function runSetup(options) {
         
         console.log('');
         console.log(chalk.green('🎉 You\'re all set! Your AI assistants now have access to your Spectator context.'));
+        console.log('');
+        console.log(chalk.cyan('📱 Next: Restart your AI application and ask:'));
+        console.log(chalk.white('   "What was my last conversation about?"'));
+        console.log('');
+        console.log(chalk.gray('This will confirm Spectator is connected and working!'));
       } else {
         logger.error('No platforms were successfully configured. Please check the errors above.');
         process.exit(1);
@@ -190,7 +203,13 @@ program
   .option('-k, --api-key <key>', 'Your Spectator API key')
   .option('-p, --platforms <platforms>', 'Comma-separated list of platforms to configure (default: all detected)')
   .option('-s, --scope <scope>', 'Configuration scope for platforms that support it (global/project)', 'global')
-  .action(runSetup);
+  .action(async (options, command) => {
+    // Check if there's an extra argument that could be an API key
+    if (command.args.length > 0 && !options.apiKey) {
+      options.apiKey = command.args[0];
+    }
+    await runSetup(options);
+  });
 
 // Validate command
 program
