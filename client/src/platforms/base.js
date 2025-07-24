@@ -12,7 +12,7 @@ class BasePlatform {
   // Get the MCP server configuration
   getMcpServerConfig(apiKey) {
     return {
-      "spectator-voice-memory": {
+      "Spectator": {
         "command": "npx",
         "args": [
           "-y",
